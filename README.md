@@ -15,8 +15,8 @@ Most of the code is bowwored from [Hypfer/esp8266-vindriktning-particle-sensor](
 - GND on VINDRIKTNING to GND on ESP8266 GND
 - REST on VINDRIKTNING to GPIO14 on ESP8266
 
-![Solder_Points](https://github.com/debsahu/esp8266-vindriktning-particle-sensor/tree/master/img/solder_points.jpg)
-![ESP8266](https://github.com/debsahu/esp8266-vindriktning-particle-sensor/tree/master/img/esp8266.jpg)
+![Solder_Points](https://github.com/debsahu/esp8266-vindriktning-particle-sensor/blob/master/img/solder_points.jpg)
+![ESP8266](https://github.com/debsahu/esp8266-vindriktning-particle-sensor/blob/master/img/esp8266.jpg)
 
 ## Software
 
