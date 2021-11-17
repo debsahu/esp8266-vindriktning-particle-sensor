@@ -9,7 +9,6 @@
 #error Platform not supported
 #endif
 
-#define SEND_TIMEOUT 245 // 245 milli seconds timeout
 #define SEND_FREQ_SEC 30 // send every this many seconds
 #define SERIAL_DEBUG false // change this to true if you want serial data
 
@@ -19,12 +18,10 @@
 
 particleSensorState_t state;
 
-unsigned long prevMillis = 0, prevSendMillis = 0;
-volatile boolean callbackCalled, sendNow = false;
+unsigned long prevSendMillis = 0;
 
 void sendData(void)
 {
-    callbackCalled = false;
     sensorData.temperature[0] = (float) state.avgPM25;
     uint8_t bs[sizeof(sensorData)];
     memcpy(bs, &sensorData, sizeof(sensorData));
@@ -69,7 +66,7 @@ void setup()
     if (esp_now_add_peer(&peerInfo) != ESP_OK)
     {
         if(SERIAL_DEBUG) Serial.println("Failed to add peer");
-        gotoSleep();
+        ESP.restart();
     }
 
     esp_now_register_send_cb([](const uint8_t *mac, esp_now_send_status_t sendStatus) {
@@ -78,7 +75,6 @@ void setup()
             Serial.print("\r\nLast Packet Send Status:\t");
             Serial.println(sendStatus == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
         }
-        callbackCalled = true;
     });
 
 #elif defined(ESP8266)
@@ -87,11 +83,10 @@ void setup()
     esp_now_add_peer(mac, ESP_NOW_ROLE_SLAVE, WIFI_CHANNEL, NULL, 0);
 
     esp_now_register_send_cb([](uint8_t *mac, uint8_t sendStatus) {
-        if(SERIAL_DEBUG) Serial.printf("send_cb, send done, status = %i\n", sendStatus);
-        if (sendStatus == 0)
+        if(SERIAL_DEBUG)
         {
-            callbackCalled = true;
-            sendNow = false;
+            Serial.printf("send_cb, send done, status = %i\n", sendStatus);
+            Serial.println(sendStatus == 0 ? "Delivery Success" : "Delivery Fail");
         }
     });
 #endif
@@ -99,7 +94,7 @@ void setup()
     memcpy(sensorData.friendlyName, FRIENDLY_NAME, strlen(FRIENDLY_NAME) + 1);
     memcpy(sensorData.deviceName, DEVICE_NAME_FULL, strlen(DEVICE_NAME_FULL) + 1);
 
-    prevMillis = millis();
+    prevSendMillis = millis();
 }
 
 void loop()
@@ -110,16 +105,10 @@ void loop()
 
     if(currentMillis - prevSendMillis >= SEND_FREQ_SEC * 1000)
     {
-        sendNow = true;
-        prevSendMillis = millis();
-    }
-
-    if (sendNow && (!callbackCalled || (currentMillis - prevMillis > SEND_TIMEOUT)))
-    {
         if(state.valid)
         {
             sendData();
         }
-        prevMillis = millis();
+        prevSendMillis = millis();
     }
 }
