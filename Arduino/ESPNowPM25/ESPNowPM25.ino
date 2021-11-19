@@ -9,16 +9,97 @@
 #error Platform not supported
 #endif
 
-#define SEND_FREQ_SEC 30 // send every this many seconds
-#define SERIAL_DEBUG false // change this to true if you want serial data
+#include <SensirionI2CScd4x.h> // https://github.com/Sensirion/arduino-i2c-scd4x
+#include <Wire.h>
+
+#define SEND_FREQ_SEC 30    // send every this many seconds
+#define SERIAL_DEBUG  false // change this to true if you want serial data
+#define PIN_SDA       4     // SDA pin - GPIO4
+#define PIN_SCL       5     // SCL pin - GPIO5
 
 #include "../config.h";
 #include "SerialCom.h"
 #include "Types.h"
 
+SensirionI2CScd4x scd4x;
+
 particleSensorState_t state;
 
 unsigned long prevSendMillis = 0;
+
+void startSCD41(void)
+{
+    Wire.begin(PIN_SDA, PIN_SCL);
+
+    uint16_t error;
+    char errorMessage[256];
+
+    scd4x.begin(Wire);
+
+    // stop potentially previously started measurement
+    error = scd4x.stopPeriodicMeasurement();
+    if (error && SERIAL_DEBUG)
+    {
+        Serial.print("Error trying to execute stopPeriodicMeasurement(): ");
+        errorToString(error, errorMessage, 256);
+        Serial.println(errorMessage);
+    }
+
+    // Start Measurement
+    error = scd4x.startPeriodicMeasurement();
+    if (error && SERIAL_DEBUG)
+    {
+        Serial.print("Error trying to execute startPeriodicMeasurement(): ");
+        errorToString(error, errorMessage, 256);
+        Serial.println(errorMessage);
+    }
+}
+
+bool getSCD41Data(void)
+{
+    uint16_t error;
+    char errorMessage[256];
+
+    uint16_t co2 = 0;
+    float temperature = 0.0f;
+    float humidity = 0.0f;
+
+    error = scd4x.readMeasurement(co2, temperature, humidity);
+    if (error)
+    {
+        if (SERIAL_DEBUG)
+        {
+            Serial.print("Error trying to execute readMeasurement(): ");
+            errorToString(error, errorMessage, 256);
+            Serial.println(errorMessage);
+        }
+        return false;
+    }
+    else if (co2 == 0)
+    {
+        if (SERIAL_DEBUG)
+            Serial.println("Invalid sample detected, skipping.");
+        return false;
+    }
+    else
+    {
+        sensorData.pressure[0] = (float) co2;
+        sensorData.temperature[1] = temperature;
+        sensorData.humidity[0] = humidity;
+        if (SERIAL_DEBUG)
+        {
+            Serial.print("Co2:");
+            Serial.print(co2);
+            Serial.print("\t");
+            Serial.print("Temperature:");
+            Serial.print(temperature);
+            Serial.print("\t");
+            Serial.print("Humidity:");
+            Serial.println(humidity);
+        }
+    }
+    return true;
+}
 
 void sendData(void)
 {
@@ -36,6 +117,9 @@ void setup()
         Serial.begin(115200);
         Serial.println();
     }
+
+    startSCD41();
+    getSCD41Data();
     SerialCom::setup();
 
     WiFi.mode(WIFI_STA); // Station mode for esp-now sensor node
@@ -107,6 +191,7 @@ void loop()
     {
         if(state.valid)
         {
+            getSCD41Data();
             sendData();
         }
         prevSendMillis = millis();

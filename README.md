@@ -8,12 +8,17 @@ Most of the code is bowwored from [Hypfer/esp8266-vindriktning-particle-sensor](
 - [ESP8266](https://www.espressif.com/products/esp8266-esp-module/) ($2.00)
 - Dupount cables ($0.50)
 - Soldering Iron & solder
+- [SCD41 sensor](https://www.sensirion.com/en/environmental-sensors/carbon-dioxide-sensors/carbon-dioxide-sensor-scd4x/) ($50)
 
 ## Connections
 
 - 5V on VINDRIKTNING to 5V on ESP8266 VIN
 - GND on VINDRIKTNING to GND on ESP8266 GND
 - REST on VINDRIKTNING to GPIO14 on ESP8266
+- 3.3 of ESP8266 to VCC on SCD41
+- GND of ESP8266 to GND of SCD41
+- GPIO4 of ESP8266 to SDA of SCD41
+- GPIO5 of ESP8266 to SCL of SCD41
 
 ![Solder_Points](https://github.com/debsahu/esp8266-vindriktning-particle-sensor/blob/master/img/solder_points.jpg)
 ![ESP8266](https://github.com/debsahu/esp8266-vindriktning-particle-sensor/blob/master/img/esp8266.jpg)
@@ -21,6 +26,7 @@ Most of the code is bowwored from [Hypfer/esp8266-vindriktning-particle-sensor](
 ## Software
 
 - Use platformio to build this sketch
+- Edit [`config.h`](https://github.com/debsahu/esp8266-vindriktning-particle-sensor/blob/master/Arduino/config.h)
 - Follow ESPNow server code here: [debsahu/ESPNowMQTT](https://github.com/debsahu/ESPNowMQTT)
 - Home Assistant
 
@@ -33,7 +39,31 @@ sensor:
     device_class: aqi
     icon: mdi:molecule
     unit_of_measurement: "µg/m³"
-
+  
+  - platform: mqtt
+    name: "Temperature PM 2.5 Sensor 1"
+    state_topic: "home/espnow/pm25_sensor1"
+    value_template: "{{ value_json.temperature[1] }}"
+    device_class: temperature
+    icon: mdi:thermometer
+    unit_of_measurement: "°C"
+  
+  - platform: mqtt
+    name: "Humidity PM 2.5 Sensor 1"
+    state_topic: "home/espnow/pm25_sensor1"
+    value_template: "{{ value_json.humidity[0] }}"
+    device_class: humidity
+    icon: mdi:water-percent
+    unit_of_measurement: "%"
+  
+  - platform: mqtt
+    name: "CO2 PM 2.5 Sensor 1"
+    state_topic: "home/espnow/pm25_sensor1"
+    value_template: "{{ value_json.pressure[0] }}"
+    device_class: carbon_dioxide
+    icon: mdi:molecule-co2
+    unit_of_measurement: "ppm"
+  
   - platform: template
     sensors:
      vindriktning_color_1:
