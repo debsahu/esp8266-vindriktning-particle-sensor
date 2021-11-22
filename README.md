@@ -1,6 +1,6 @@
 # ESPNow connectivity for the Ikea VINDRIKTNING
 
-Most of the code is bowwored from [Hypfer/esp8266-vindriktning-particle-sensor](https://github.com/Hypfer/esp8266-vindriktning-particle-sensor) that uses an ESP8266 to read from GPIO14(RX) and send via ESPNow to a EspNow Server (check [debsahu/ESPNowMQTT](https://github.com/debsahu/ESPNowMQTT)), which sends it out to a MQTT broker.
+Most of the code is borrored from [Hypfer/esp8266-vindriktning-particle-sensor](https://github.com/Hypfer/esp8266-vindriktning-particle-sensor) that uses an ESP8266 to read from GPIO14(RX) and send via ESPNow to a EspNow Server (check [debsahu/ESPNowMQTT](https://github.com/debsahu/ESPNowMQTT)), which sends it out to a MQTT broker.
 
 ## Hardware
 
@@ -43,7 +43,7 @@ sensor:
   - platform: mqtt
     name: "Temperature PM 2.5 Sensor 1"
     state_topic: "home/espnow/pm25_sensor1"
-    value_template: "{{ value_json.temperature[1] }}"
+    value_template: "{{ value_json.temperature[1] | round(1) }}"
     device_class: temperature
     icon: mdi:thermometer
     unit_of_measurement: "°C"
@@ -51,7 +51,7 @@ sensor:
   - platform: mqtt
     name: "Humidity PM 2.5 Sensor 1"
     state_topic: "home/espnow/pm25_sensor1"
-    value_template: "{{ value_json.humidity[0] }}"
+    value_template: "{{ value_json.humidity[0] | round(1) }}"
     device_class: humidity
     icon: mdi:water-percent
     unit_of_measurement: "%"
