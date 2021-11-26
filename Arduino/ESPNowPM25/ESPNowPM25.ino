@@ -112,7 +112,7 @@ bool getSCD41Data(void)
 #ifdef SHT30_ENABLED
 bool initSHT30()
 {
-    Wire.begin();
+    Wire.begin(PIN_SDA, PIN_SCL);
     if (sht.init())
     {
         if (SERIAL_DEBUG) Serial.print("init(): success\n");
