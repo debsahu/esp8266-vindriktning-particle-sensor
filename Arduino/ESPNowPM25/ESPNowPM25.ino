@@ -26,9 +26,8 @@ SensirionI2CScd4x scd4x;
 #endif
 
 #ifdef SHT30_ENABLED
-#include <WEMOS_SHT3X.h> // https://github.com/wemos/WEMOS_SHT3x_Arduino_Library
-
-SHT3X sht30(0x45);
+#include <SHTSensor.h> //https://github.com/Sensirion/arduino-sht
+SHTSensor sht;
 #endif
 
 particleSensorState_t state;
@@ -111,12 +110,28 @@ bool getSCD41Data(void)
 #endif
 
 #ifdef SHT30_ENABLED
+bool initSHT30()
+{
+    Wire.begin();
+    if (sht.init())
+    {
+        if (SERIAL_DEBUG) Serial.print("init(): success\n");
+    }
+    else
+    {
+        if (SERIAL_DEBUG) Serial.print("init(): failed\n");
+        return false;
+    }
+    sht.setAccuracy(SHTSensor::SHT_ACCURACY_HIGH);
+    return true;
+}
+
 bool getSHT30Data(void)
 {
-    if (sht30.get() == 0)
+    if (sht.readSample())
     {
-        float temperature = sht30.cTemp;
-        float humidity = sht30.humidity;
+        float temperature = sht.getTemperature();
+        float humidity = sht.getHumidity();
         sensorData.temperature[1] = temperature;
         sensorData.humidity[0] = humidity;
         if (SERIAL_DEBUG)
@@ -152,6 +167,9 @@ void setup()
 #ifdef SCD4X_ENABLED
     startSCD41();
     getSCD41Data();
+#endif
+#ifdef SHT30_ENABLED
+    initSHT30();
 #endif
     SerialCom::setup();
 

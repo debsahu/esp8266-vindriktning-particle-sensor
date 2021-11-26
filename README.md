@@ -8,7 +8,8 @@ Most of the code is borrored from [Hypfer/esp8266-vindriktning-particle-sensor](
 - [ESP8266](https://www.espressif.com/products/esp8266-esp-module/) ($2.00)
 - Dupount cables ($0.50)
 - Soldering Iron & solder
-- [SCD41 sensor](https://www.sensirion.com/en/environmental-sensors/carbon-dioxide-sensors/carbon-dioxide-sensor-scd4x/) ($50)
+- [SCD41 sensor](https://www.sensirion.com/en/environmental-sensors/carbon-dioxide-sensors/carbon-dioxide-sensor-scd4x/) (~$50) - optional
+- [SHT30 sensor](https://www.wemos.cc/en/latest/d1_mini_shield/sht30.html) (~$5) - optional
 
 ## Connections
 
@@ -16,14 +17,14 @@ Most of the code is borrored from [Hypfer/esp8266-vindriktning-particle-sensor](
 - GND on VINDRIKTNING to GND on ESP8266 GND
 - REST on VINDRIKTNING to GPIO14 on ESP8266
 
-### SCD41 (#define SCD4X_ENABLED in config.h)
+### SCD41 (`#define SCD4X_ENABLED` in `config.h`)
 
 - 3.3 of ESP8266 to VCC on SCD41
 - GND of ESP8266 to GND of SCD41
 - GPIO4 of ESP8266 to SDA of SCD41
 - GPIO5 of ESP8266 to SCL of SCD41
 
-### SHT3x (#define SHT30_ENABLED in config.h)
+### SHT3x (`#define SHT30_ENABLED` in `config.h`)
 
 - 3.3 of ESP8266 to VCC on SHT3x
 - GND of ESP8266 to GND of SHT3x
