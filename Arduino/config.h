@@ -1,5 +1,8 @@
 #include <pgmspace.h>
 
+// #define SCD4X_ENABLED  // uncomment to enable SCD4X support
+// #define SHT30_ENABLED // uncomment to enable SHT30 support
+
 const char FRIENDLY_NAME[] = "pm25_sensor1"; // do not uses spaces
 const char DEVICE_NAME_FULL[] = "PM2.5 sensor 1";
 

@@ -15,10 +15,20 @@ Most of the code is borrored from [Hypfer/esp8266-vindriktning-particle-sensor](
 - 5V on VINDRIKTNING to 5V on ESP8266 VIN
 - GND on VINDRIKTNING to GND on ESP8266 GND
 - REST on VINDRIKTNING to GPIO14 on ESP8266
+
+### SCD41 (#define SCD4X_ENABLED in config.h)
+
 - 3.3 of ESP8266 to VCC on SCD41
 - GND of ESP8266 to GND of SCD41
 - GPIO4 of ESP8266 to SDA of SCD41
 - GPIO5 of ESP8266 to SCL of SCD41
+
+### SHT3x (#define SHT30_ENABLED in config.h)
+
+- 3.3 of ESP8266 to VCC on SHT3x
+- GND of ESP8266 to GND of SHT3x
+- GPIO4 of ESP8266 to SDA of SHT3x
+- GPIO5 of ESP8266 to SCL of SHT3x
 
 ![Solder_Points](https://github.com/debsahu/esp8266-vindriktning-particle-sensor/blob/master/img/solder_points.jpg)
 ![ESP8266](https://github.com/debsahu/esp8266-vindriktning-particle-sensor/blob/master/img/esp8266.jpg)
@@ -40,6 +50,7 @@ sensor:
     icon: mdi:molecule
     unit_of_measurement: "µg/m³"
   
+  # if SCD4X_ENABLED or SHT30_ENABLED is defined
   - platform: mqtt
     name: "Temperature PM 2.5 Sensor 1"
     state_topic: "home/espnow/pm25_sensor1"
@@ -48,6 +59,7 @@ sensor:
     icon: mdi:thermometer
     unit_of_measurement: "°C"
   
+  # if SCD4X_ENABLED or SHT30_ENABLED is defined
   - platform: mqtt
     name: "Humidity PM 2.5 Sensor 1"
     state_topic: "home/espnow/pm25_sensor1"
@@ -56,6 +68,7 @@ sensor:
     icon: mdi:water-percent
     unit_of_measurement: "%"
   
+  # if SCD4X_ENABLED is defined
   - platform: mqtt
     name: "CO2 PM 2.5 Sensor 1"
     state_topic: "home/espnow/pm25_sensor1"
